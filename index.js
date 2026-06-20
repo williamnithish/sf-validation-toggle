@@ -50,16 +50,26 @@ function requireAuth(req, res, next) {
 // a code verifier here, stash it in the session, and let jsforce derive the
 // code_challenge from it for the authorize URL.
 app.get('/auth/login', (req, res) => {
-  const oauth2 = new jsforce.OAuth2({ ...oauth2Config, useVerifier: true });
+  const oauth2 = new jsforce.OAuth2({
+    ...oauth2Config,
+    useVerifier: true
+  });
 
-  // Save the verifier so /auth/callback (a separate request) can use it later
   req.session.codeVerifier = oauth2.codeVerifier;
 
-  const authUrl = oauth2.getAuthorizationUrl({
-    scope: 'api refresh_token',
-    state: 'sfValidationToggle'
+  req.session.save((err) => {
+    if (err) {
+      console.error('Session save error:', err);
+      return res.status(500).send('Session save failed');
+    }
+
+    const authUrl = oauth2.getAuthorizationUrl({
+      scope: 'api refresh_token',
+      state: 'sfValidationToggle'
+    });
+
+    res.redirect(authUrl);
   });
-  res.redirect(authUrl);
 });
 
 // 2. Salesforce redirects back here with ?code=...
@@ -82,19 +92,29 @@ app.get('/auth/callback', async (req, res) => {
     const userInfo = await conn.authorize(code);
 
     req.session.sf = {
-      accessToken: conn.accessToken,
-      refreshToken: conn.refreshToken,
-      instanceUrl: conn.instanceUrl,
-      userId: userInfo.id,
-      organizationId: userInfo.organizationId
-    };
+  accessToken: conn.accessToken,
+  refreshToken: conn.refreshToken,
+  instanceUrl: conn.instanceUrl,
+  userId: userInfo.id,
+  organizationId: userInfo.organizationId
+};
 
-    // Grab username + org name for the dashboard header
-    const identity = await conn.identity();
-    req.session.sf.username = identity.username;
-    req.session.sf.displayName = identity.display_name;
+// Remove PKCE verifier after successful login
+delete req.session.codeVerifier;
 
-    res.redirect('/dashboard.html');
+// Grab username + org name for the dashboard header
+const identity = await conn.identity();
+req.session.sf.username = identity.username;
+req.session.sf.displayName = identity.display_name;
+
+// Save session before redirecting
+req.session.save((err) => {
+  if (err) {
+    console.error('Session save error:', err);
+  }
+
+  res.redirect('/dashboard.html');
+});
   } catch (err) {
     console.error('OAuth callback error:', err);
     res.redirect(`/?error=${encodeURIComponent(err.message)}`);
