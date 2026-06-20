@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Validation Rule Switch</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="card dashboard-card">
+      <div class="header-row">
+        <h1>⚡ Validation Rule Switch</h1>
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+      </div>
+
+      <div id="whoami" class="whoami"></div>
+
+      <div class="toolbar">
+        <button id="getRulesBtn" class="btn btn-primary">Get Validation Rules</button>
+        <button id="newRuleBtn" class="btn btn-secondary">+ New Validation Rule</button>
+        <button id="rollbackBtn" class="btn btn-rollback" disabled>Rollback to Original</button>
+        <button id="deployBtn" class="btn btn-deploy" disabled>Deploy Changes</button>
+      </div>
+
+      <div id="newRuleForm" class="new-rule-form hidden">
+        <h3>New Validation Rule on Account</h3>
+        <div class="form-row">
+          <label for="ruleNameInput">Rule Name</label>
+          <input id="ruleNameInput" type="text" placeholder="e.g. Account_Phone_Required" />
+        </div>
+        <div class="form-row">
+          <label for="formulaInput">Error Condition Formula</label>
+          <textarea id="formulaInput" rows="3" placeholder="e.g. ISBLANK(Phone)"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="errorMsgInput">Error Message</label>
+          <input id="errorMsgInput" type="text" placeholder="e.g. Phone number is required" />
+        </div>
+        <div class="form-row checkbox-row">
+          <label><input id="activeInput" type="checkbox" checked /> Active immediately</label>
+        </div>
+        <div class="form-actions">
+          <button id="createRuleBtn" class="btn btn-primary">Create Rule</button>
+          <button id="cancelRuleBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+      <div id="statusBox" class="status-box hidden"></div>
+
+      <div id="objectHeaderRow" class="object-header-row hidden">
+        <span class="object-name">Account</span>
+        <span class="object-actions">
+          <button id="enableAllBtn" class="btn btn-enable">Enable All</button>
+          <button id="disableAllBtn" class="btn btn-disable">Disable All</button>
+        </span>
+      </div>
+
+      <table id="rulesTable" class="rules-table hidden">
+        <thead>
+          <tr>
+            <th>Rule Name</th>
+            <th>Error Message</th>
+            <th>State</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rulesBody"></tbody>
+      </table>
+
+      <p id="emptyMsg" class="empty-msg hidden">
+        No validation rules loaded yet. Click "Get Validation Rules" above.
+      </p>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "sf-validation-toggle",
+  "version": "1.0.0",
+  "description": "Salesforce Validation Rule Switch - login with Salesforce, list validation rules on Account, toggle active/inactive, deploy changes back to org.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "jsforce": "^3.6.2"
+  }
+}

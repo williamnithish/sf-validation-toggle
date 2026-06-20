@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salesforce Validation Rule Switch</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="page">
+    <div class="card login-card">
+      <h1>⚡ Validation Rule Switch</h1>
+      <p class="subtitle">
+        Log in to your Salesforce org to view, enable/disable, and deploy
+        changes to <strong>Account</strong> validation rules.
+      </p>
+
+      <div id="errorBox" class="error-box hidden"></div>
+
+      <a href="/auth/login" class="btn btn-primary btn-large" id="loginBtn">
+        Log in with Salesforce
+      </a>
+
+      <p class="footnote">
+        Uses OAuth 2.0 Web Server Flow. No org data is stored —
+        your session only lives in memory while this app is open.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    if (error) {
+      const box = document.getElementById('errorBox');
+      box.textContent = 'Login failed: ' + error;
+      box.classList.remove('hidden');
+    }
+
+    // If already logged in, skip straight to dashboard
+    fetch('/api/whoami')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.loggedIn) window.location.href = '/dashboard.html';
+      });
+  </script>
+</body>
+</html>
